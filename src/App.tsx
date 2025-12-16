@@ -5,6 +5,10 @@ import { getBSMonthLength } from "./calendar/bsMonth";
 import { shiftDays, snapToBSMonthStart } from "./calendar/nav";
 import { getItemsForADDate } from "./store/calendarStore";
 import DayTimeline from "./components/DayTimeline";
+import { useEffect } from "react";
+import { addCalendarItem } from "./store/calendarStore";
+
+
 
 const todayDate = new Date();
 const todayAD: ADDate = {
@@ -16,6 +20,7 @@ const todayAD: ADDate = {
 const weekDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 function App() {
+
   // BS month anchor (AD date of BS day 1)
   const [startAD, setStartAD] = useState<ADDate>(todayAD);
 
