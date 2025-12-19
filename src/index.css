@@ -1,3 +1,4 @@
+
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -13,27 +14,44 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* ---------- CRITICAL LAYOUT FIX ---------- */
+/* These three lines are REQUIRED for full-height apps */
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+/* ---------- BODY (DO NOT CENTER APP) ---------- */
+
+body {
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+/* ---------- LINKS ---------- */
+
 a {
   font-weight: 500;
   color: #646cff;
   text-decoration: inherit;
 }
+
 a:hover {
   color: #535bf2;
 }
 
-body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
-}
+/* ---------- HEADINGS ---------- */
 
 h1 {
   font-size: 3.2em;
   line-height: 1.1;
+  margin: 0;
 }
+
+/* ---------- BUTTONS ---------- */
 
 button {
   border-radius: 8px;
@@ -43,25 +61,32 @@ button {
   font-weight: 500;
   font-family: inherit;
   background-color: #1a1a1a;
+  color: inherit;
   cursor: pointer;
   transition: border-color 0.25s;
 }
+
 button:hover {
   border-color: #646cff;
 }
+
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
+
+/* ---------- LIGHT MODE ---------- */
 
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
     background-color: #ffffff;
   }
+
   a:hover {
     color: #747bff;
   }
+
   button {
     background-color: #f9f9f9;
   }

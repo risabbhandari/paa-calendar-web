@@ -1,11 +1,18 @@
 import type { ADDate } from "../core/types";
-import {
-  loadCalendarItems,
-  addCalendarItem,
-} from "../store/calendarStore";
+import type { CalendarItem } from "../core/calendar-item";
+import { loadCalendarItems } from "../store/calendarStore";
 
 type Props = {
   selectedAD: ADDate;
+
+  // request creation (hour click)
+  onRequestCreateEvent: (args: {
+    ad: ADDate;
+    startHour: number;
+  }) => void;
+
+  // request editing (event click)
+  onRequestEditEvent: (event: CalendarItem) => void;
 };
 
 function isSameDay(ad: ADDate, iso: string) {
@@ -17,7 +24,11 @@ function isSameDay(ad: ADDate, iso: string) {
   );
 }
 
-export default function DayTimeline({ selectedAD }: Props) {
+export default function DayTimeline({
+  selectedAD,
+  onRequestCreateEvent,
+  onRequestEditEvent,
+}: Props) {
   const items = loadCalendarItems().filter((item) =>
     isSameDay(selectedAD, item.startAD)
   );
@@ -30,8 +41,10 @@ export default function DayTimeline({ selectedAD }: Props) {
       style={{
         borderLeft: "1px solid #333",
         paddingLeft: 24,
-        height: "100%",
-        overflowY: "auto",
+        width: "100%",
+        display: "flex",
+        flexDirection: "column",
+        minHeight: 0,
       }}
     >
       {/* Header */}
@@ -51,7 +64,9 @@ export default function DayTimeline({ selectedAD }: Props) {
                 borderRadius: 6,
                 marginBottom: 6,
                 fontSize: 13,
+                cursor: "pointer",
               }}
+              onClick={() => onRequestEditEvent(item)}
             >
               {item.title}
             </div>
@@ -60,46 +75,47 @@ export default function DayTimeline({ selectedAD }: Props) {
       )}
 
       {/* Timeline */}
-      <div style={{ position: "relative" }}>
-        {/* Hour rows (clickable) */}
+      <div
+        style={{
+          position: "relative",
+          flex: 1,
+          overflowY: "auto",
+          width: "100%",
+        }}
+      >
+        {/* Hour rows */}
         {Array.from({ length: 24 }).map((_, hour) => (
           <div
             key={hour}
-            onClick={() => {
-              const start = new Date(
-                selectedAD.year,
-                selectedAD.month - 1,
-                selectedAD.day,
-                hour,
-                0
-              );
-
-              const end = new Date(start);
-              end.setHours(end.getHours() + 1);
-
-              addCalendarItem({
-                id: crypto.randomUUID(),
-                title: "New event",
-                startAD: start.toISOString(),
-                endAD: end.toISOString(),
-                allDay: false,
-                type: "event",
-                createdAt: new Date().toISOString(),
-              });
+            onClick={() =>
+              onRequestCreateEvent({
+                ad: selectedAD,
+                startHour: hour,
+              })
+            }
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background =
+                "rgba(100,150,255,0.08)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = "transparent";
             }}
             style={{
               display: "flex",
               height: 60,
               borderTop: "1px solid #2a2a2a",
               cursor: "pointer",
+              width: "100%",
             }}
           >
+            {/* Hour label */}
             <div
               style={{
                 width: 60,
                 fontSize: 12,
                 opacity: 0.6,
                 paddingTop: 4,
+                flexShrink: 0,
               }}
             >
               {hour === 0
@@ -110,11 +126,12 @@ export default function DayTimeline({ selectedAD }: Props) {
                 ? "12 PM"
                 : `${hour - 12} PM`}
             </div>
+
             <div style={{ flex: 1 }} />
           </div>
         ))}
 
-        {/* Timed events (do not block clicks) */}
+        {/* Timed events */}
         <div style={{ pointerEvents: "none" }}>
           {timed.map((item) => {
             const start = new Date(item.startAD);
@@ -135,7 +152,10 @@ export default function DayTimeline({ selectedAD }: Props) {
             return (
               <div
                 key={item.id}
-                onClick={(e) => e.stopPropagation()}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onRequestEditEvent(item);
+                }}
                 style={{
                   pointerEvents: "auto",
                   position: "absolute",

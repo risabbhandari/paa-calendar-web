@@ -2,17 +2,15 @@ export type CalendarItemType = "event" | "task" | "reminder";
 
 export type CalendarItem = {
   id: string;
-
   title: string;
-  description?: string;
-
-  // AD is the source of truth
-  startAD: string; // ISO string
-  endAD?: string;  // ISO string
-
+  startAD: string;
+  endAD?: string;
   allDay: boolean;
-
-  type: CalendarItemType;
-
+  type: "event";
   createdAt: string;
+
+  // ✅ NEW (optional, safe)
+  location?: string;
+  description?: string;
 };
+
